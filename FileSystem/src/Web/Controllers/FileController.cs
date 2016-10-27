@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Web.Utility;
 using IFileProvider = Web.Services.FileProvider.IFileProvider;
 
@@ -28,7 +29,7 @@ namespace Web.Controllers
         #region Action
 
         [HttpPut("{bucket}/{*fileName}")]
-        public ActionResult Upload(string bucket, string fileName)
+        public async Task<ActionResult> Upload(string bucket, string fileName)
         {
             var files = Request.Form.Files;
             if (files == null || !files.Any())
@@ -36,7 +37,7 @@ namespace Web.Controllers
 
             var file = files[0];
             using (var stream = file.OpenReadStream())
-                _fileProvider.CreateFile(Combine(bucket, fileName), stream);
+                await _fileProvider.CreateFile(Combine(bucket, fileName), stream);
 
             return Ok();
         }
