@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Web.Services.FileProvider;
+using Web.Services.FileProvider.Jkzl;
 
 namespace Web
 {
@@ -25,11 +26,21 @@ namespace Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            switch (Configuration["FileProvider"])
+            {
+                case "JkzlFileProvider":
+                    services.AddSingleton<IFileInfoRespoistory, FileInfoRespoistory>();
+                    services.AddSingleton<IFileProvider, JkzlFileProvider>();
+                    break;
+
+                case "LocalFileProvider":
+                    services.AddSingleton<IFileProvider, LocalFileProvider>();
+                    services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+                    break;
+            }
+
             // Add framework services.
             services.AddMvc();
-
-            services.AddSingleton<IFileProvider, LocalFileProvider>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
